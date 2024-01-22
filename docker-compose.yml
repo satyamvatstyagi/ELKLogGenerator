@@ -17,7 +17,7 @@ services:
       - 8080:8080
 
   filebeat:
-    image: docker.elastic.co/beats/filebeat:8.12.0
+    image: docker.elastic.co/beats/filebeat:6.5.1
     depends_on:
       elasticsearch:
         condition: service_healthy
@@ -26,7 +26,7 @@ services:
       - ./logs/:/logs/
 
   logstash:
-    image: docker.elastic.co/logstash/logstash:8.12.0
+    image: docker.elastic.co/logstash/logstash:7.6.2
     volumes:
       - ./config/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
     depends_on:
@@ -34,7 +34,7 @@ services:
         condition: service_healthy
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.2
     volumes:
       - ./config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
     healthcheck:
@@ -53,7 +53,7 @@ services:
       - 9200:9200
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:8.12.0
+    image: docker.elastic.co/kibana/kibana:7.6.2
     depends_on:
       elasticsearch:
         condition: service_healthy
