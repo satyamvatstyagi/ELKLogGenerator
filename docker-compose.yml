@@ -1,8 +1,23 @@
 version: '2.2'
 
 services:
+  golang:
+    image: golang:1.40.4
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
+    volumes:
+      - ./src/:/go/src/github.com/satyamvatstyagi/ELKLogGenerator
+      - ./logs/:/logs/
+    working_dir: /go/src/github.com/satyamvatstyagi/ELKLogGenerator
+    command: go run main.go
+    ports:
+      - 8080:8080
+
   filebeat:
-    image: docker.elastic.co/beats/filebeat:6.5.1
+    image: docker.elastic.co/beats/filebeat:8.12.0
     depends_on:
       elasticsearch:
         condition: service_healthy
@@ -11,7 +26,7 @@ services:
       - ./logs/:/logs/
 
   logstash:
-    image: docker.elastic.co/logstash/logstash:7.6.2
+    image: docker.elastic.co/logstash/logstash:8.12.0
     volumes:
       - ./config/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
     depends_on:
@@ -19,11 +34,18 @@ services:
         condition: service_healthy
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
     volumes:
       - ./config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
     healthcheck:
-      test: ["CMD", "curl", "-s", "-f", "http://localhost:9200/_cat/health"]
+      test:
+        [
+          "CMD",
+          "curl",
+          "-s",
+          "-f",
+          "http://localhost:9200/_cat/health"
+        ]
       interval: 3s
       timeout: 3s
       retries: 10
@@ -36,7 +58,14 @@ services:
       elasticsearch:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-s", "-f", "http://localhost:5601/api/status"]
+      test:
+        [
+          "CMD",
+          "curl",
+          "-s",
+          "-f",
+          "http://localhost:5601/api/status"
+        ]
       interval: 3s
       timeout: 3s
       retries: 50
