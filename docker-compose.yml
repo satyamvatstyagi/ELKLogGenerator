@@ -9,7 +9,7 @@ services:
       kibana:
         condition: service_healthy
     volumes:
-      - ./src/:/go/src/github.com/satyamvatstyagi/ELKLogGenerator
+      - ./:/go/src/github.com/satyamvatstyagi/ELKLogGenerator
       - ./logs/:/logs/
     working_dir: /go/src/github.com/satyamvatstyagi/ELKLogGenerator
     command: go run main.go
